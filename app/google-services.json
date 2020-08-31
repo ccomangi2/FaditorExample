@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "301282573822",
+    "firebase_url": "https://faditorexmaple.firebaseio.com",
+    "project_id": "faditorexmaple",
+    "storage_bucket": "faditorexmaple.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:301282573822:android:3dc01c9e51f5115b8f94af",
+        "android_client_info": {
+          "package_name": "com.faditor.faditorexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "301282573822-dc6ed5fhsmrtgmandr35qikcjc1if634.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.faditor.faditorexample",
+            "certificate_hash": "19cc3693b88e12a8c5b3e6380178e82bcb5440af"
+          }
+        },
+        {
+          "client_id": "301282573822-u5olm9h8q7q5j6k1rd5pmvikp4hpaifd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDlYGwW5K9o22XbCT2hz3mya--IWUHKOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "301282573822-u5olm9h8q7q5j6k1rd5pmvikp4hpaifd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
