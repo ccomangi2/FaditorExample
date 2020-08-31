@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeItem"
+        android:icon="@drawable/home_on_off"
+        android:enabled="true"
+        android:title="Home" />
+    <item
+        android:id="@+id/searchItem"
+        android:icon="@drawable/search_on_off"
+        android:title="Search" />
+    <item
+        android:id="@+id/addItem"
+        android:icon="@drawable/add_on_off"
+        android:title="Add" />
+    <item
+        android:id="@+id/noticeItem"
+        android:icon="@drawable/notice_on_off"
+        android:title="Notice" />
+    <item
+        android:id="@+id/paperItem"
+        android:icon="@drawable/paper_on_off"
+        android:title="Paper" />
+</menu>

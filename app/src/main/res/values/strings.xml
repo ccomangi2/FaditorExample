@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">FaditorExample</string>
+    <string name="app_name">Faditor</string>
+    <string name="best_look_user1">amassuvin</string>
+    <string name="best_look_user2">kimsssuhyun</string>
+    <string name="facebook_app_id">4007277899323657</string>
+    <string name="fb_login_protocol_scheme">fb4007277899323657</string>
+    <string name="success_login">11</string>
+    <string name="failed_login">22</string>
 </resources>

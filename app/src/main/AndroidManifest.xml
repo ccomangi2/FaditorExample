@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.faditor.faditorexample">
 
     <application
@@ -8,14 +9,29 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+        <activity
+            android:windowSoftInputMode="stateHidden"
+            android:name=".MainActivity.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            tools:ignore="InnerclassSeparator,LockedOrientationActivity"> <!-- 강제로 세로모드로만 하게 만듬 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <activity android:name=".CommentActivity.CommentActivity" />
+        <activity android:name=".FashionPickActivity.FashionPickActivity" />
+        <activity android:name=".NoticeActivity.NoticeActivity" />
+        <activity android:name=".PostActivity.PostActivity" />
+        <activity android:name=".ProfileActivity.ProfileActivity" />
+        <activity android:name=".ProfileEditActivity.ProfileEditActivity" />
+        <activity android:name=".SearchActivity.SearchActivity" />
+        <activity android:name=".SettingActivity.SettingActivity" />
+        <activity android:name=".PaperActivity.PaperActivity" />
+
+    </application>
 </manifest>
