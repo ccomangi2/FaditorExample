@@ -32,19 +32,6 @@
             tools:layout_editor_absoluteY="16dp" />
 
         <ImageButton
-            android:id="@+id/back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="15dp"
-            android:background="@android:color/transparent"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/back" />
-
-        <ImageButton
             android:id="@+id/setting"
             android:layout_width="24dp"
             android:layout_height="24dp"

@@ -1,41 +1,36 @@
 package com.faditor.faditorexample.ProfileActivity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import com.faditor.faditorexample.MainActivity.MainActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SettingActivity.SettingActivity;
 
-public class ProfileActivity extends AppCompatActivity {
-    ImageButton back;
-    ImageButton edit;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+public class ProfileActivity extends Fragment {
+    private View view;
 
-        back = (ImageButton)findViewById(R.id.back);
-        edit = (ImageButton)findViewById(R.id.setting);
+    ImageButton setting;
 
-        back.setOnClickListener(new View.OnClickListener() {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_profile, container, false);
+
+        setting = view.findViewById(R.id.setting);
+        setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getContext(), SettingActivity.class);
                 startActivity(intent);
             }
         });
 
-        edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-                startActivity(intent);
-            }
-        });
+        return view;
     }
 }

@@ -18,7 +18,7 @@
         android:icon="@drawable/notice_on_off"
         android:title="Notice" />
     <item
-        android:id="@+id/paperItem"
-        android:icon="@drawable/paper_on_off"
-        android:title="Paper" />
+        android:id="@+id/profileItem"
+        android:icon="@drawable/profile_on_off"
+        android:title="Profile" />
 </menu>

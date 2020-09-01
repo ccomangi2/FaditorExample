@@ -1,12 +1,5 @@
 package com.faditor.faditorexample.MainActivity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -14,17 +7,17 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ActionMenuView;
-import android.widget.Button;
-import android.widget.ImageButton;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.faditor.faditorexample.HomeActivity.HomeActivity;
 import com.faditor.faditorexample.NoticeActivity.NoticeActivity;
 import com.faditor.faditorexample.ProfileActivity.ProfileActivity;
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SearchActivity.SearchActivity;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.security.MessageDigest;
@@ -67,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.noticeItem:
                         transaction.replace(R.id.frameLayout, fragmentNotice).commitAllowingStateLoss();
                         break;
-                    case R.id.paperItem:
-                        transaction.replace(R.id.frameLayout, fragmentNotice).commitAllowingStateLoss();
+                    case R.id.profileItem:
+                        transaction.replace(R.id.frameLayout, fragmentProfile).commitAllowingStateLoss();
                         break;
                 }
                 return true;

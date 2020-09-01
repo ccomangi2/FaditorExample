@@ -23,15 +23,24 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".CommentActivity.CommentActivity" />
-        <activity android:name=".FashionPickActivity.FashionPickActivity" />
-        <activity android:name=".NoticeActivity.NoticeActivity" />
-        <activity android:name=".PostActivity.PostActivity" />
-        <activity android:name=".ProfileActivity.ProfileActivity" />
-        <activity android:name=".ProfileEditActivity.ProfileEditActivity" />
-        <activity android:name=".SearchActivity.SearchActivity" />
-        <activity android:name=".SettingActivity.SettingActivity" />
-        <activity android:name=".PaperActivity.PaperActivity" />
+        <activity android:name=".CommentActivity.CommentActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".FashionPickActivity.FashionPickActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".NoticeActivity.NoticeActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".PostActivity.PostActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".ProfileActivity.ProfileActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".ProfileEditActivity.ProfileEditActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".SearchActivity.SearchActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".SettingActivity.SettingActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".PaperActivity.PaperActivity"
+            tools:ignore="InnerclassSeparator" />
 
     </application>
 </manifest>
