@@ -5,6 +5,16 @@
     <string name="facebook_app_id">760534148067106</string>
     <string name="fb_login_protocol_scheme">fb760534148067106</string>
 
+    <string name="profilechange"><u>프로필 사진 바꾸기</u></string>
+    <string name="user_name">user_faditor</string>
+    <string name="user_info">자고싶다</string>
+    <string name="f1">스트릿</string>
+    <string name="f2">데님</string>
+    <string name="f3">아메카지</string>
+    <string name="name">이수현</string>
+    <string name="phone">010-1111-1111</string>
+    <string name="email">faditor@gmail.com</string>
+
     <string name="success_login">11</string>
     <string name="failed_login">22</string>
 </resources>
