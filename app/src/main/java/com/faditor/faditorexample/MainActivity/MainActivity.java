@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.searchItem:
                         transaction.replace(R.id.frameLayout, fragmentSearch).commitAllowingStateLoss();
                         break;
+                    case R.id.addItem:
+
+                        break;
                     case R.id.noticeItem:
                         transaction.replace(R.id.frameLayout, fragmentNotice).commitAllowingStateLoss();
                         break;
