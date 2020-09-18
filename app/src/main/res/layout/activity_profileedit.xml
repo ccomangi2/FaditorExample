@@ -63,6 +63,7 @@
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#000000"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
 
@@ -71,9 +72,7 @@
             android:layout_height="100dp"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
-            android:src="@drawable/test"
-            app:civ_border_color="#FF0000"
-            app:civ_border_width="2dp" />
+            android:src="@drawable/test" />
 
         <Button
             android:id="@+id/image_change"
