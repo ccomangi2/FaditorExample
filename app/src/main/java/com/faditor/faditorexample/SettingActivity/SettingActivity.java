@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.faditor.faditorexample.MainActivity.MainActivity;
 import com.faditor.faditorexample.ProfileEditActivity.ProfileEditActivity;
 import com.faditor.faditorexample.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class SettingActivity extends AppCompatActivity {
@@ -41,5 +42,10 @@ public class SettingActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    public void signOut() {
+        // [START auth_sign_out]
+        FirebaseAuth.getInstance().signOut();
+        // [END auth_sign_out]
     }
 }
