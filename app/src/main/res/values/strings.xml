@@ -1,10 +1,22 @@
 <?xml version="1.0"?>
-    <resources>
+    <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">faditor</string>
-    <string name="facebook_app_id">873009302900995</string>
-    <string name="fb_login_protocol_scheme">fb873009302900995</string>
-    <string name="com.twitter.sdk.android.CONSUMER_KEY">0lY6xdMc8l3Bgkdep8DvfPxe4</string>
-    <string name="com.twitter.sdk.android.CONSUMER_SECRET">2Uov8wp8sQWccy1oRRes7Q3VgWfsTE1tokYHblse9TTaF0BW1b</string>
+    <string name="facebook_app_id">249290509720019</string>
+    <string name="fb_login_protocol_scheme">fb249290509720019</string>
+    <string name="com.twitter.sdk.android.CONSUMER_KEY" tools:ignore="ExtraTranslation">0lY6xdMc8l3Bgkdep8DvfPxe4</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET" tools:ignore="ExtraTranslation">2Uov8wp8sQWccy1oRRes7Q3VgWfsTE1tokYHblse9TTaF0BW1b</string>
+
+
+    <string name="best_look_user2">ssuu</string>
+    <string name="best_look_user1">amassuvin</string>
+    <string name="user_name">faditor</string>
+    <string name="user_info">자고싶다</string>
+    <string name="f1">스트릿</string>
+    <string name="f2">데님</string>
+    <string name="f3">아메카지</string>
+    <string name="profilechange">프로필 사진 바꾸기</string>
+    <string name="name">이수현</string>
+    <string name="phone">010-1111-1111</string>
 
     <!-- Sign In -->
     <string name="email">Email</string>

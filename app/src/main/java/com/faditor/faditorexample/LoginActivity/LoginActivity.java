@@ -1,7 +1,11 @@
 package com.faditor.faditorexample.LoginActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.facebook.CallbackManager;
+import com.facebook.login.LoginManager;
 import com.faditor.faditorexample.MainActivity.MainActivity;
 import com.faditor.faditorexample.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,19 +31,38 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
 public class LoginActivity extends AppCompatActivity {
     private static final int GOOGLE_LOGIN_CODE = 9001;
     private static final String TAG = "GoogleActivity";
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private CallbackManager mCallbackManager;
 
     Button google_sign_in_btn;
+    Button facebook_sign_in_btn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //getHashKey();
+
+        //페이스북 로그인
+        facebook_sign_in_btn = (Button)findViewById(R.id.facebook_sign_in_button);
+        facebook_sign_in_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                facebookLogin();
+            }
+        });
+
+        mCallbackManager = CallbackManager.Factory.create();
+
         //구글 로그인
         google_sign_in_btn = (Button)findViewById(R.id.google_sign_in_button);
         google_sign_in_btn.setOnClickListener(new View.OnClickListener() {
@@ -58,15 +83,23 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
     }
 
+    //구글 로그인 메소드
     private void googleLogin() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, GOOGLE_LOGIN_CODE);
     }
 
+    //페이스북 로그인 메소드
+    private void facebookLogin() {
+        LoginManager.getInstance()
+                .logInWithReadPermissions(this, Arrays.asList("public_profile", "Login"));
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        // Pass the activity result back to the Facebook SDK
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == GOOGLE_LOGIN_CODE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -106,5 +139,25 @@ public class LoginActivity extends AppCompatActivity {
     private void gotomain() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
+    }
+    private void getHashKey(){
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageInfo == null)
+            Log.e("KeyHash", "KeyHash:null");
+
+        for (Signature signature : packageInfo.signatures) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            } catch (NoSuchAlgorithmException e) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+            }
+        }
     }
 }
