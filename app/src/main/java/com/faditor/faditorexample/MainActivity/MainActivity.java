@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.faditor.faditorexample.HomeActivity.HomeActivity;
 import com.faditor.faditorexample.NoticeActivity.NoticeActivity;
-import com.faditor.faditorexample.ProfileActivity.ProfileActivity;
+import com.faditor.faditorexample.ProfileActivity.MyProfileActivity;
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SearchActivity.SearchActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeActivity fragmentHome = new HomeActivity();
     private SearchActivity fragmentSearch = new SearchActivity();
     private NoticeActivity fragmentNotice = new NoticeActivity();
-    private ProfileActivity fragmentProfile = new ProfileActivity();
+    private MyProfileActivity fragmentProfile = new MyProfileActivity();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

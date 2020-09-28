@@ -19,7 +19,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.HashMap;
 
-public class ProfileActivity extends Fragment {
+public class MyProfileActivity extends Fragment {
     private View view;
 
     ImageButton setting;
@@ -29,7 +29,7 @@ public class ProfileActivity extends Fragment {
     private String uid;
     private String currentUserUid;
     private View fragmentView;
-//    private FcmPush fcmPush;
+    //    private FcmPush fcmPush;
     private ListenerRegistration followListenerRegistration;
     private ListenerRegistration followingListenerRegistration;
     private ListenerRegistration imageprofileListenerRegistration;
@@ -37,7 +37,7 @@ public class ProfileActivity extends Fragment {
     private HashMap _$_findViewCache;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.activity_profile, container, false);
+        view = inflater.inflate(R.layout.activity_myprofile, container, false);
 
 
         // 설정 화면 이동하기 (설정 버튼 이벤트)

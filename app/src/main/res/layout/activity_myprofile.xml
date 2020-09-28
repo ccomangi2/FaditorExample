@@ -199,23 +199,12 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
-        <Button
-            android:id="@+id/account_btn_follow_signout"
-            android:text="@string/follow"
-            android:textSize="18sp"
-            android:layout_marginBottom="15dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginEnd="10dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="350dp"
         android:background="#000000"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
