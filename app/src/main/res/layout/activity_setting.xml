@@ -146,7 +146,7 @@
             app:layout_constraintTop_toBottomOf="@+id/locationInfo" />
 
         <Button
-            android:id="@+id/logOut"
+            android:id="@+id/logout"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="20dp"

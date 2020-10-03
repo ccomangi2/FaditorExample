@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //getHashKey();
+        getHashKey();
         //게스트 로그인
         guest_sign_in_btn = (Button)findViewById(R.id.guest_sign_in_button);
         guest_sign_in_btn.setOnClickListener(new View.OnClickListener() {

@@ -11,12 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.faditor.faditorexample.MainActivity.MainActivity;
 import com.faditor.faditorexample.ProfileEditActivity.ProfileEditActivity;
 import com.faditor.faditorexample.R;
-import com.google.firebase.auth.FirebaseAuth;
 
 
 public class SettingActivity extends AppCompatActivity {
     ImageButton back;
     Button setProfile;
+    Button logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +24,7 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
 
         // 뒤로 가기
-        back = (ImageButton)findViewById(R.id.back);
+        back = (ImageButton) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,18 +34,13 @@ public class SettingActivity extends AppCompatActivity {
         });
 
         // 프로필 수정 페이지 이동
-        setProfile = (Button)findViewById(R.id.setProfile);
+        setProfile = (Button) findViewById(R.id.setProfile);
         setProfile.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ProfileEditActivity.class);
                 startActivity(intent);
             }
         });
-    }
-    public void signOut() {
-        // [START auth_sign_out]
-        FirebaseAuth.getInstance().signOut();
-        // [END auth_sign_out]
     }
 }
