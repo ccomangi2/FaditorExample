@@ -1,5 +1,6 @@
 package com.faditor.faditorexample.MainActivity;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -15,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.faditor.faditorexample.HomeActivity.HomeActivity;
 import com.faditor.faditorexample.NoticeActivity.NoticeActivity;
+import com.faditor.faditorexample.PostUploadActivity.PostUploadActivity;
 import com.faditor.faditorexample.ProfileActivity.MyProfileActivity;
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SearchActivity.SearchActivity;
@@ -58,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
                         transaction.replace(R.id.frameLayout, fragmentSearch).commitAllowingStateLoss();
                         break;
                     case R.id.addItem:
-
+                        Intent intent = new Intent(getApplicationContext(), PostUploadActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.noticeItem:
                         transaction.replace(R.id.frameLayout, fragmentNotice).commitAllowingStateLoss();

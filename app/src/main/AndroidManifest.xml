@@ -42,6 +42,8 @@
             tools:ignore="InnerclassSeparator" />
         <activity android:name=".PaperActivity.PaperActivity"
             tools:ignore="InnerclassSeparator" />
+        <activity android:name=".PostUploadActivity.PostUploadActivity"
+            tools:ignore="InnerclassSeparator" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -61,4 +63,5 @@
         </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>
