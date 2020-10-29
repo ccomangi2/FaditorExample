@@ -200,7 +200,7 @@ public class PostUploadActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
                                 while (!imageUrl.isComplete()) ;
-
+                                //user.getUid() 이거 uid로 바꿔야 하는데 uid가 뭔지 모르겠어서 저렇게 해둠
                                 mDatabase.getReference().child("users").child(user.getUid())
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
