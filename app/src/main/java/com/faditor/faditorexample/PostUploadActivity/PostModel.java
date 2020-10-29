@@ -3,7 +3,7 @@ package com.faditor.faditorexample.PostUploadActivity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WriteInfo {
+public class PostModel {
     public String userID; // 로그인한 아이디
     public String photo; // 게시글 사진
     public String photoName; // 게시글사진 이름(사진삭제할때 필요, 절대경로를 뜻함)
@@ -17,24 +17,4 @@ public class WriteInfo {
     public Map<String, Boolean> stars = new HashMap<>(); // 좋아요 한 사람
     // String 값은 아이디를 뜻하고, boolean 은 true
 
-    public WriteInfo(String contents, String userID){
-        this.contents = contents;
-        this.userID = userID;
-    }
-
-    public String getContents(){
-        return this.contents;
-    }
-
-    public void setContents(String contents){
-        this.contents = contents;
-    }
-
-    public String getUserID(){
-        return this.userID;
-    }
-
-    public void setUserID(String userID){
-        this.userID = userID;
-    }
 }
