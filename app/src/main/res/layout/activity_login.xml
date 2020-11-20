@@ -13,9 +13,13 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="210dp"
-        android:background="@drawable/btn_signin_facebook"
+        android:background="@drawable/facebook_button_state"
+        android:drawableLeft="@drawable/com_facebook_button_login_logo"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp"
         android:text="@string/signin_facebook"
         android:textSize="15sp"
+        android:stateListAnimator="@null"
         android:textColor="@color/colorWhite" />
 
     <Button
@@ -26,10 +30,14 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="150dp"
-        android:background="@drawable/btn_signin_google"
+        android:background="@drawable/google_button_state"
+        android:drawableLeft="@drawable/googleg_disabled_color_18"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp"
+        android:stateListAnimator="@null"
         android:text="@string/signin_google"
-        android:textSize="15sp"
-        android:textColor="@color/colorWhite" />
+        android:textColor="@color/colorWhite"
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/guest_sign_in_button"
