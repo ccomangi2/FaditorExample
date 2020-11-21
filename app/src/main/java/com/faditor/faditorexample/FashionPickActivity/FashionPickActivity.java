@@ -1,8 +1,8 @@
 package com.faditor.faditorexample.FashionPickActivity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.faditor.faditorexample.R;
 

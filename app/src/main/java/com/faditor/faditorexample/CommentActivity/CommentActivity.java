@@ -1,12 +1,11 @@
 package com.faditor.faditorexample.CommentActivity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.appcompat.app.AppCompatActivity;
 import com.faditor.faditorexample.MainActivity.MainActivity;
 import com.faditor.faditorexample.R;
 

@@ -2,10 +2,12 @@ package com.faditor.faditorexample.ProfileActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,32 +15,30 @@ import androidx.fragment.app.Fragment;
 
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SettingActivity.SettingActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
-
-import java.util.HashMap;
 
 public class MyProfileActivity extends Fragment {
+    private FirebaseAuth mAuth;
     private View view;
-
     ImageButton setting;
 
-    private FirebaseAuth auth;
-    private FirebaseFirestore firestore;
-    private String uid;
-    private String currentUserUid;
-    private View fragmentView;
-    //    private FcmPush fcmPush;
-    private ListenerRegistration followListenerRegistration;
-    private ListenerRegistration followingListenerRegistration;
-    private ListenerRegistration imageprofileListenerRegistration;
-    private ListenerRegistration recyclerListenerRegistration;
-    private HashMap _$_findViewCache;
+    //faditor 정보
+    TextView user_name;
+    TextView user_intro;
+    TextView like_fashion;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.activity_myprofile, container, false);
-
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("Users").document(user.getUid());
 
         // 설정 화면 이동하기 (설정 버튼 이벤트)
         setting = view.findViewById(R.id.setting);
@@ -49,57 +49,28 @@ public class MyProfileActivity extends Fragment {
                 startActivity(intent);
             }
         });
-
+        //faditor 정보
+        user_name = view.findViewById(R.id.user_name);
+        user_intro = view.findViewById(R.id.info);
+        like_fashion = view.findViewById(R.id.like_fashion);
+        docRef.collection("Faditor").document("info").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                        user_name.setText(document.getData().get("user_name").toString());
+                        user_intro.setText(document.getData().get("user_intro").toString());
+                        like_fashion.setText(document.getData().get("like_fashion").toString());
+                    } else {
+                        Log.d("TAG", "No such document");
+                    }
+                } else {
+                    Log.d("TAG", "get failed with ", task.getException());
+                }
+            }
+        });
         return view;
     }
-//    public final class UserFragmentRecyclerViewAdapter extends RecyclerView.Adapter {
-//        private final ArrayList contentDTOs;
-//        public final ArrayList getContentDTOs() {
-//            return this.contentDTOs;
-//        }
-//        public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
-//
-//            return null;
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-//
-//        }
-//
-//        public int getItemCount() {
-//            return this.contentDTOs.size();
-//        }
-//
-//        public UserFragmentRecyclerViewAdapter(ArrayList contentDTOs) {
-//
-//            this.contentDTOs = contentDTOs;
-//        }
-//
-//        @Metadata(
-//                mv = {1, 1, 18},
-//                bv = {1, 0, 3},
-//                k = 1,
-//                d1 = {"\u0000\u0012\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0006\b\u0086\u0004\u0018\u00002\u00020\u0001B\r\u0012\u0006\u0010\u0002\u001a\u00020\u0003¢\u0006\u0002\u0010\u0004R\u001a\u0010\u0002\u001a\u00020\u0003X\u0086\u000e¢\u0006\u000e\n\u0000\u001a\u0004\b\u0005\u0010\u0006\"\u0004\b\u0007\u0010\b¨\u0006\t"},
-//                d2 = {"Lcom/company/howl/howlstagram/navigation/UserFragment$UserFragmentRecyclerViewAdapter$CustomViewHolder;", "Landroid/support/v7/widget/RecyclerView$ViewHolder;", "imageView", "Landroid/widget/ImageView;", "(Lcom/company/howl/howlstagram/navigation/UserFragment$UserFragmentRecyclerViewAdapter;Landroid/widget/ImageView;)V", "getImageView", "()Landroid/widget/ImageView;", "setImageView", "(Landroid/widget/ImageView;)V", "app"}
-//        )
-//        public final class CustomViewHolder extends RecyclerView.ViewHolder {
-//            @NotNull
-//            private ImageView imageView;
-//
-//            @NotNull
-//            public final ImageView getImageView() {
-//                return this.imageView;
-//            }
-//
-//            public final void setImageView(@NotNull ImageView var1) {
-//
-//            }
-//
-//            public CustomViewHolder(@NotNull ImageView imageView) {
-//                super();
-//
-//            }
-//        }
-//    }
 }

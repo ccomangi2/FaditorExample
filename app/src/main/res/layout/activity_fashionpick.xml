@@ -81,7 +81,7 @@
         android:layout_marginStart="25dp"
         android:layout_marginLeft="25dp"
         android:layout_marginTop="5dp"
-        android:text="3개 선택"
+        android:text="1개 선택"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
