@@ -4,16 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.faditor.faditorexample.Database.UserData;
 import com.faditor.faditorexample.Database.UserFaditorData;
-import com.faditor.faditorexample.FashionPickActivity.FashionPickActivity;
 import com.faditor.faditorexample.MainActivity.MainActivity;
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SettingActivity.SettingActivity;
@@ -38,6 +39,28 @@ public class ProfileEditActivity extends AppCompatActivity {
     EditText user_intro;
     TextView like_fashion;
 
+    //패션 분야 선택 레이아웃
+    ConstraintLayout constraintLayout;
+
+    Button vintige; //빈티지
+    Button caejual; //캐주얼
+    Button dendi; //댄디
+    Button clrecik; //클래식
+    Button abanggard; //아방가르드
+    Button amecagi; //아메카지
+    Button strit; //스트릿
+    Button spoti; //스포티
+    Button pungk; //펑크
+    Button modan; //모던
+    Button minimal; //미니멀
+    Button militari; //밀리터리
+    Button leiad; //레이어드
+    Button letro; //레트로
+    Button feminin; //페미닌
+    Button denim; //데님
+
+    String favorite;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +69,42 @@ public class ProfileEditActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         DocumentReference docRef = db.collection("Users").document(user.getUid());
+
+        constraintLayout = findViewById(R.id.fashtion_layout);
+
+        vintige = findViewById(R.id.vintige); //빈티지
+        caejual = findViewById(R.id.caejual); //캐주얼
+        dendi = findViewById(R.id.dendi); //댄디
+        clrecik = findViewById(R.id.clrecik); //클래식
+        abanggard = findViewById(R.id.abanggard); //아방가르드
+        amecagi = findViewById(R.id.amecagi); //아메카지
+        strit = findViewById(R.id.strit); //스트릿
+        spoti = findViewById(R.id.spoti); //스포티
+        pungk = findViewById(R.id.pungk); //펑크
+        modan = findViewById(R.id.modan); //모던
+        minimal = findViewById(R.id.minimal); //미니멀
+        militari = findViewById(R.id.militari); //밀리터리
+        leiad = findViewById(R.id.leiad); //레이어드
+        letro = findViewById(R.id.letro); //레트로
+        feminin = findViewById(R.id.feminin); //페미닌
+        denim = findViewById(R.id.denim); //데님
+
+        vintige.setOnClickListener(onClickListener);
+        caejual.setOnClickListener(onClickListener);
+        dendi.setOnClickListener(onClickListener);
+        clrecik.setOnClickListener(onClickListener);
+        abanggard.setOnClickListener(onClickListener);
+        amecagi.setOnClickListener(onClickListener);
+        strit.setOnClickListener(onClickListener);
+        spoti.setOnClickListener(onClickListener);
+        pungk.setOnClickListener(onClickListener);
+        modan.setOnClickListener(onClickListener);
+        minimal.setOnClickListener(onClickListener);
+        militari.setOnClickListener(onClickListener);
+        leiad.setOnClickListener(onClickListener);
+        letro.setOnClickListener(onClickListener);
+        feminin.setOnClickListener(onClickListener);
+        denim.setOnClickListener(onClickListener);
 
         findViewById(R.id.back).setOnClickListener(onClickListener);
         findViewById(R.id.ok).setOnClickListener(onClickListener);
@@ -109,7 +168,87 @@ public class ProfileEditActivity extends AppCompatActivity {
                     storageUpload();
                     break;
                 case R.id.fashion_choise_btn: //패션 분야 선택
-                    gotomain(FashionPickActivity.class);
+                    constraintLayout.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.vintige:
+                    favorite = vintige.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.caejual:
+                    favorite = caejual.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.dendi:
+                    favorite = dendi.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.clrecik:
+                    favorite = clrecik.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.abanggard:
+                    favorite = abanggard.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.amecagi:
+                    favorite = amecagi.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.strit:
+                    favorite = strit.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.spoti:
+                    favorite = spoti.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.pungk:
+                    favorite = pungk.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.modan:
+                    favorite = modan.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.minimal:
+                    favorite = minimal.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.militari:
+                    favorite = militari.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.leiad:
+                    favorite = leiad.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.letro:
+                    favorite = letro.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.feminin:
+                    favorite = feminin.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
+                    break;
+                case R.id.denim:
+                    favorite = denim.getText().toString();
+                    like_fashion.setText(favorite);
+                    constraintLayout.setVisibility(View.GONE);
                     break;
             }
         }
