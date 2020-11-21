@@ -10,4 +10,8 @@
     <style parent="Widget.AppCompat.Button.Colored" name="ButtonStyle">
         <item name="colorButtonNormal">@color/colorWhite</item>
     </style>
+    <style name="AppTheme.BlueRipple">
+        <item name="colorControlHighlight">#82B7E4</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
 </resources>
