@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/loginpage">
+    android:background="@drawable/login">
 
     <Button
         android:id="@+id/facebook_sign_in_button"
@@ -12,7 +12,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="33dp"
         android:layout_marginRight="33dp"
-        android:layout_marginBottom="210dp"
+        android:layout_marginBottom="230dp"
         android:background="@drawable/facebook_button_state"
         android:drawableLeft="@drawable/com_facebook_button_login_logo"
         android:paddingLeft="13dp"
@@ -25,13 +25,13 @@
         android:id="@+id/google_sign_in_button"
         android:text="Google로 로그인"
         android:textSize="15dp"
-
+        android:stateListAnimator="@null"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginBottom="150dp" />
+        android:layout_marginBottom="170dp" />
 
     <Button
         android:id="@+id/guest_sign_in_button"
