@@ -1,6 +1,7 @@
 package com.faditor.faditorexample.Database;
 
 import android.app.Activity;
+import android.util.Patterns;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 public class FirebaseHelper {
     private Activity activity;
@@ -30,8 +32,11 @@ public class FirebaseHelper {
     public void storageDelete(final PostData postInfo){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        final String contents = postInfo.getPhotoUri();
+        ArrayList<String> contentsList = postInfo.getContents();
         final String id = postInfo.getUserId();
+        for (int i = 0; i < contentsList.size(); i++) {
+            String contents = contentsList.get(i);
+            if (isStorageUrl(contents)) {
                 successCount++;
                 StorageReference desertRef = storageRef.child("posts/" + id + "/" + storageUrlToName(contents));
                 desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -46,6 +51,8 @@ public class FirebaseHelper {
                         showToast("Error");
                     }
                 });
+            }
+        }
         storeDelete(id, postInfo);
     }
 
@@ -79,5 +86,8 @@ public class FirebaseHelper {
     public static boolean isImageFile(String path) {
         String mimeType = URLConnection.guessContentTypeFromName(path);
         return mimeType != null && mimeType.startsWith("image");
+    }
+    public static boolean isStorageUrl(String url){
+        return Patterns.WEB_URL.matcher(url).matches() && url.contains("gs://faditorexmaple.appspot.com/post");
     }
 }

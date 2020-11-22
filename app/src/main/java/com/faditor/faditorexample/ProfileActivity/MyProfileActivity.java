@@ -1,27 +1,34 @@
 package com.faditor.faditorexample.ProfileActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SettingActivity.SettingActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class MyProfileActivity extends Fragment {
     private FirebaseAuth mAuth;
@@ -71,6 +78,27 @@ public class MyProfileActivity extends Fragment {
                 }
             }
         });
+
+        //storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference gsReference = storage.getReferenceFromUrl("gs://faditorexmaple.appspot.com/").child("users").child(user.getUid()).child("profile.jpg");
+        gsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                ImageView imageView = view.findViewById(R.id.account_iv_profile);
+                //이미지 로드 성공시
+                Glide.with(MyProfileActivity.this)
+                        .load(uri)
+                        .into(imageView);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                //이미지 로드 실패시
+                //Toast.makeText(ProfileEditActivity.this, "실패", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return view;
     }
 }

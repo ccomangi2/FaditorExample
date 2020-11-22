@@ -82,6 +82,7 @@
                 android:orientation="vertical">
 
                 <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
@@ -268,6 +269,7 @@
         </LinearLayout>
     </ScrollView>
 
+    <!--선택하기 클릭시 나오는 뷰-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fashtion_layout"
         android:layout_width="match_parent"
@@ -607,6 +609,64 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- 프로필 사진 바꾸기 클릭시 등장  -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/select_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:cardBackgroundColor="#99000000">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/button_layout"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_back"
+                    android:stateListAnimator="@null"
+                    android:text="사진 찍기"
+                    android:textSize="18dp" />
+
+                <View
+                    android:layout_width="200dp"
+                    android:layout_height="1dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:background="#A4A4A4" />
+
+                <Button
+                    android:id="@+id/btn_gallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_back"
+                    android:stateListAnimator="@null"
+                    android:text="라이브러리에서 선택"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/button_back"
+                android:text="취소"
+                android:textSize="18dp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,18 +1,31 @@
 package com.faditor.faditorexample.ProfileEditActivity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.faditor.faditorexample.Database.UserData;
 import com.faditor.faditorexample.Database.UserFaditorData;
 import com.faditor.faditorexample.MainActivity.MainActivity;
@@ -27,9 +40,46 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.os.Environment.DIRECTORY_PICTURES;
 
 public class ProfileEditActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
+    private int pathCount, successCount;
+
+    CardView lila;
+
+    private static final int REQUEST_TAKE_PHOTO = 1111;
+    private static final int REQUEST_TAKE_ALBUM = 2222;
+    private static final int REQUEST_TAKE_CROP = 3333;
+
+    String mCurrentPhotoPath;
+    Uri imageURI;
+
+    private static final int REQUEST_IMAGE_CAPTURE = 672;
+    private String imageFilePath;
+    private Uri photoUri;
+
+    private MediaScanner mMediaScanner; // 사진 저장 시 갤러리 폴더에 바로 반영사항을 업데이트 시켜주려면 이것이 필요하다(미디어 스캐닝)
 
     //개인정보 edittext
     EditText b_name, b_email;
@@ -70,7 +120,19 @@ public class ProfileEditActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         DocumentReference docRef = db.collection("Users").document(user.getUid());
 
-        constraintLayout = findViewById(R.id.fashtion_layout);
+        constraintLayout = findViewById(R.id.fashtion_layout); //선택하기 누를 시
+        lila = (CardView) findViewById(R.id.select_buttons); //프로필 사진 바꾸기 누를 시
+
+        // 사진 저장 후 미디어 스캐닝을 돌려줘야 갤러리에 반영됨.
+        mMediaScanner = MediaScanner.getInstance(getApplicationContext());
+
+        // 권한 체크
+        TedPermission.with(getApplicationContext())
+                .setPermissionListener(permissionListener)
+                .setRationaleMessage("카메라 권한이 필요합니다.")
+                .setDeniedMessage("거부하셨습니다.")
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                .check();
 
         vintige = findViewById(R.id.vintige); //빈티지
         caejual = findViewById(R.id.caejual); //캐주얼
@@ -109,6 +171,11 @@ public class ProfileEditActivity extends AppCompatActivity {
         findViewById(R.id.back).setOnClickListener(onClickListener);
         findViewById(R.id.ok).setOnClickListener(onClickListener);
         findViewById(R.id.fashion_choise_btn).setOnClickListener(onClickListener);
+
+        findViewById(R.id.image_change).setOnClickListener(onClickListener);
+        findViewById(R.id.btn_gallery).setOnClickListener(onClickListener);
+        findViewById(R.id.btn_camera).setOnClickListener(onClickListener);
+        findViewById(R.id.btn_cancel).setOnClickListener(onClickListener);
 
         //개인정보
         b_name = findViewById(R.id.name_edit);
@@ -157,6 +224,26 @@ public class ProfileEditActivity extends AppCompatActivity {
                 }
             }
         });
+        //storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference gsReference = storage.getReferenceFromUrl("gs://faditorexmaple.appspot.com/").child("users").child(user.getUid()).child("profile.jpg");
+        gsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                CircleImageView imageView = findViewById(R.id.profile_image);
+                //이미지 로드 성공시
+                Glide.with(ProfileEditActivity.this)
+                        .load(uri)
+                        .into(imageView);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                //이미지 로드 실패시
+                //Toast.makeText(ProfileEditActivity.this, "실패", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
     View.OnClickListener onClickListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -166,6 +253,33 @@ public class ProfileEditActivity extends AppCompatActivity {
                     break;
                 case R.id.ok: //수정완료
                     storageUpload();
+                    break;
+                case R.id.image_change: //프로필 이미지 바꾸기
+                    lila.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.btn_gallery: //라이브러리
+                    getAlbum();
+                    lila.setVisibility(View.GONE);
+                    break;
+                case R.id.btn_camera: //카메라 촬영
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        File photoFile = null;
+                        try {
+                            photoFile = createImageFile();
+                        } catch (IOException e) {
+
+                        }
+                        if (photoFile != null) {
+                            photoUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName(), photoFile);
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+                            lila.setVisibility(View.GONE);
+                        }
+                    }
+                    break;
+                case R.id.btn_cancel: //취소 버튼
+                    lila.setVisibility(View.GONE);
                     break;
                 case R.id.fashion_choise_btn: //패션 분야 선택
                     constraintLayout.setVisibility(View.VISIBLE);
@@ -290,6 +404,51 @@ public class ProfileEditActivity extends AppCompatActivity {
     private void storeUpload(UserFaditorData userFaditorData) {
         FirebaseUser user = mAuth.getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
+        final DocumentReference documentReference = userFaditorData == null ? firebaseFirestore.collection("users").document() : firebaseFirestore.collection("users").document(user.getUid());
+        // Create a reference to "mountains.jpg"
+        StorageReference mountainsRef = storageRef.child("users/" + documentReference.getId() + "/" + "profile.jpg");
+        // Create a reference to 'images/mountains.jpg'
+        StorageReference mountainImagesRef = storageRef.child("images/profile.jpg");
+
+        mountainsRef.getName().equals(mountainImagesRef.getName());    // true
+        mountainsRef.getPath().equals(mountainImagesRef.getPath());    // false
+
+        ImageView imageView = findViewById(R.id.profile_image);
+
+        imageView.setDrawingCacheEnabled(true);
+        imageView.buildDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = mountainsRef.putBytes(data);
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(new File("users/" + documentReference.getId() + "/" + "profile.jpg"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(stream != null) {
+            uploadTask = mountainsRef.putStream(stream);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+        }
+
         db.collection("Users").document(user.getUid()).collection("Faditor").document("info").set(userFaditorData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -330,5 +489,131 @@ public class ProfileEditActivity extends AppCompatActivity {
     }
     private void toastMessage(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    // 촬영 혹은 크롭된 사진에 대한 새로운 이미지 저장 함수
+    private File createImageFile() throws IOException{
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "TEST_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        imageFilePath = image.getAbsolutePath();
+
+        return image;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+            ExifInterface exif = null;
+
+            try {
+                exif = new ExifInterface(imageFilePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int exifOrientation;
+            int exifDegree;
+
+            if (exif != null) {
+                exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                exifDegree = exifOrientationToDegress(exifOrientation);
+            } else {
+                exifDegree = 0;
+            }
+
+            String result = "";
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HHmmss", Locale.getDefault());
+            Date curDate = new Date(System.currentTimeMillis());
+            String filename = formatter.format(curDate);
+
+            String strFolderName = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES) + File.separator + "Faditor" + File.separator;
+            File file = new File(strFolderName);
+            if (!file.exists())
+                file.mkdirs();
+
+            File f = new File(strFolderName + "/" + filename + ".png");
+            result = f.getPath();
+
+            FileOutputStream fOut = null;
+            try {
+                fOut = new FileOutputStream(f);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                result = "Save Error fOut";
+            }
+
+            // 비트맵 사진 폴더 경로에 저장
+            rotate(bitmap, exifDegree).compress(Bitmap.CompressFormat.PNG, 70, fOut);
+
+            try {
+                fOut.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                fOut.close();
+                // 방금 저장된 사진을 갤러리 폴더 반영 및 최신화
+                mMediaScanner.mediaScanning(strFolderName + "/" + filename + ".png");
+            } catch (IOException e) {
+                e.printStackTrace();
+                result = "File close Error";
+            }
+
+            // 이미지 뷰에 비트맵을 set하여 이미지 표현
+            ((ImageView) findViewById(R.id.profile_image)).setImageBitmap(rotate(bitmap, exifDegree));
+        }
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            photoUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
+                ((ImageView) findViewById(R.id.profile_image)).setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+            //이미지 뷰에 비트맵을 set하여 이미지 표현
+        }
+    }
+
+    private int exifOrientationToDegress(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    private Bitmap rotate(Bitmap bitmap, float degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
+    // 권한 확인
+    PermissionListener permissionListener = new PermissionListener() {
+        @Override
+        public void onPermissionGranted() {
+            //Toast.makeText(getApplicationContext(), "권한이 허용됨",Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+            Toast.makeText(getApplicationContext(), "권한이 거부됨",Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    // 앨범 불러오기 함수
+    private void getAlbum(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "이미지를 선택하세요."), 0);
     }
 }

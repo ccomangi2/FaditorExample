@@ -3,6 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.faditor.faditorexample">
 
+    <!-- 카메라에 대한 권한 받아옴 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 외부 저장소에 대한 읽고 쓰기 권한 받아옴 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- hardware의 카메라를 사용하기 위한 uses-feature을 설정하도록 한다. -->
+    <uses-feature android:name="android.hardware.camera2" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_main"
@@ -59,6 +71,17 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:authorities="com.faditor.faditorexample"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
