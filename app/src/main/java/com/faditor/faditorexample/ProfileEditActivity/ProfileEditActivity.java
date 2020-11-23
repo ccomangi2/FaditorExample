@@ -374,6 +374,7 @@ public class ProfileEditActivity extends AppCompatActivity {
         String name = user_name.getText().toString();
         String intro = user_intro.getText().toString();
         String fashion = like_fashion.getText().toString();
+        String photouri = photoUri.getLastPathSegment();
 
         //개인정보
         String basic_name = b_name.getText().toString();
@@ -386,7 +387,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         //final String date_tv = time;
         if(user_name.length() > 0 && b_name.length() > 0 && b_email.length() > 0) {
-            UserFaditorData userFaditorData = new UserFaditorData(name, intro, fashion);
+            UserFaditorData userFaditorData = new UserFaditorData(name, intro, fashion, photouri);
             storeUpload(userFaditorData);
             UserData userdata = new UserData(basic_name, basic_email);
             profileUpload(userdata);

@@ -28,12 +28,15 @@ import com.faditor.faditorexample.Database.PostData;
 import com.faditor.faditorexample.PostActivity.PostActivity;
 import com.faditor.faditorexample.ProfileEditActivity.MediaScanner;
 import com.faditor.faditorexample.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -63,8 +66,6 @@ public class PostUploadActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private PostData postInfo;
-    private FirebaseUser user;
-    private StorageReference storageRef;
     EditText text_upload;
     ImageView photo_upload; //게시글 사진
     private ArrayList<String> pathList = new ArrayList<>();
@@ -83,11 +84,11 @@ public class PostUploadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post_upload);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
 
         photo_upload = findViewById(R.id.photo_upload); //게시글 사진
         text_upload = findViewById(R.id.text_upload); //게시글 내용
 
+        findViewById(R.id.back).setOnClickListener(onClickListener); //뒤로가기
         findViewById(R.id.upload).setOnClickListener(onClickListener);
         findViewById(R.id.upload_btn).setOnClickListener(onClickListener);
         findViewById(R.id.camera_btn).setOnClickListener(onClickListener);
@@ -155,73 +156,92 @@ public class PostUploadActivity extends AppCompatActivity {
         }
     };
     private void storageUpload() {
-        String userId = mAuth.getUid();
-        String content = text_upload.getText().toString();
+        final String userId = mAuth.getUid();
+        final String content = text_upload.getText().toString();
         final ArrayList<String> contentsList = new ArrayList<>();
         final ArrayList<String> formatList = new ArrayList<>();
-
-        if(photoUri != null) {
-            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-            final DocumentReference documentReference = postInfo == null ? firebaseFirestore.collection("Posts").document() : firebaseFirestore.collection("Posts").document(postInfo.getUserId());
-            final Date date = postInfo == null ? new Date() : postInfo.getPostDate();
-            if(content.length() > 0) {
-                contentsList.add(content);
-                formatList.add(content);
-            }
-            if(pathList.size()!=0) {
-                if (!isStorageUrl(pathList.get(pathCount))) {
-                    String path = pathList.get(pathCount);
-                    successCount++;
-                    contentsList.add(path);
-                    if (isImageFile(path)) {
-                        formatList.add("image");
-                    } else {
-                        formatList.add("text");
-                    }
-
-                    final StorageReference mountainImagesRef = storageRef.child("post/" + documentReference.getId() + "/" + pathCount + ".jpg");
-                    try {
-                        InputStream stream = new FileInputStream(new File(pathList.get(pathCount)));
-                        StorageMetadata metadata = new StorageMetadata.Builder().setCustomMetadata("index", "" + (contentsList.size() - 1)).build();
-                        UploadTask uploadTask = mountainImagesRef.putStream(stream);
-                        uploadTask.addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("Users").document(userId);
+        docRef.collection("Faditor").document("info").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                        final String userprofileimage = (String) document.getData().get("photoUri");
+                        final String username = (String) document.getData().get("user_name");
+                        //final int photo = Integer.parseInt(photoUri.getAuthority().toString());
+                        if(photoUri != null) {
+                            final String photoName = photoUri.getLastPathSegment();
+                            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+                            final DocumentReference documentReference = postInfo == null ? firebaseFirestore.collection("Posts").document() : firebaseFirestore.collection("Posts").document(postInfo.getUserId());
+                            final Date date = postInfo == null ? new Date() : postInfo.getPostDate();
+                            if(content.length() > 0) {
+                                contentsList.add(content);
+                                formatList.add(content);
                             }
-                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                                final int index = Integer.parseInt(taskSnapshot.getMetadata().getCustomMetadata("index"));
-//                                mountainImagesRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                    @Override
-//                                    public void onSuccess(Uri uri) {
-//                                        successCount--;
-//                                        contentsList.set(index, uri.toString());
-//                                        if (successCount == 0) {
-//                                            PostData postInfo = new PostData(user.getUid(), date, contentsList, formatList);
-//                                            storeUpload(documentReference, postInfo);
-//                                        }
+                            if(pathList.size()!=0) {
+                                if (!isStorageUrl(pathList.get(pathCount))) {
+                                    String path = pathList.get(pathCount);
+                                    successCount++;
+                                    contentsList.add(path);
+//                                    if (isImageFile(path)) {
+//                                        formatList.add("image");
+//                                    } else {
+//                                        formatList.add("text");
 //                                    }
-//                                });
-                            }
-                        });
-                    } catch (FileNotFoundException e) {
-                        Log.e("로그", "에러: " + e.toString());
-                    }
-                    pathCount++;
+                                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                                    StorageReference storageRef = storage.getReference();
+                                    final StorageReference mountainImagesRef = storageRef.child("post/" + documentReference.getId() + "/" + photoName + ".jpg");
+                                    try {
+                                        InputStream stream = new FileInputStream(new File("post/" + documentReference.getId() + "/" + photoName + ".jpg"));
+                                        StorageMetadata metadata = new StorageMetadata.Builder().setCustomMetadata("index", "" + (contentsList.size() - 1)).build();
+                                        UploadTask uploadTask = mountainImagesRef.putStream(stream);
+                                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                            }
+                                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                final int index = Integer.parseInt(taskSnapshot.getMetadata().getCustomMetadata("index"));
+                                                mountainImagesRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
+                                                        successCount--;
+                                                        contentsList.set(index, uri.toString());
+                                                        if (successCount == 0) {
+                                                            PostData postInfo = new PostData(userId, date, contentsList, formatList, photoName, userprofileimage, username);
+                                                            storeUpload(documentReference, postInfo);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    } catch (FileNotFoundException e) {
+                                        Log.e("로그", "에러: " + e.toString());
+                                    }
+                                    pathCount++;
 
-                    Log.v("알림", "현재로그인한 유저 " + userId);
+                                    Log.v("알림", "현재로그인한 유저 " + userId);
+                                }
+                            }
+                            //final String date_tv = time;
+                            if (successCount == 0) {
+                                PostData postInfo = new PostData(userId, date, contentsList, formatList, photoName, userprofileimage, username);
+                                storeUpload(documentReference, postInfo);
+                                gotomain(PostActivity.class);
+                            } else {
+                                toastMessage("다시 시도해 주세요.");
+                            }
+                        } else {
+                            toastMessage("이미지를 추가해주세요.");
+                        }
+                    }
                 }
             }
-            //final String date_tv = time;
-            if (successCount == 0) {
-                PostData postInfo = new PostData(userId, date, contentsList, formatList);
-                storeUpload(documentReference, postInfo);
-                gotomain(PostActivity.class);
-            } else {
-                toastMessage("이미지를 추가해주세요.");
-            }
-        }
+        });
     }
     private void storeUpload(DocumentReference documentReference, final PostData postInfo) {
         documentReference.set(postInfo.getPostData())
@@ -393,7 +413,7 @@ public class PostUploadActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
     public static boolean isStorageUrl(String url){
-        return Patterns.WEB_URL.matcher(url).matches() && url.contains("https://firebasestorage.googleapis.com/v0/b/faditorexmaple.appspot.com/o/post");
+        return Patterns.WEB_URL.matcher(url).matches() && url.contains("gs://faditorexmaple.appspot.com/");
     }
 
     public static String storageUrlToName(String url){

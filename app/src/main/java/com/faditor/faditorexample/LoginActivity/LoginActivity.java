@@ -222,7 +222,7 @@ public class LoginActivity extends AppCompatActivity {
         //final String date_tv = time;
         UserData userdata = new UserData(name, email);
         profileUpload(userdata);
-        UserFaditorData userFaditorData = new UserFaditorData("user"+String.valueOf(user_count), "", "");
+        UserFaditorData userFaditorData = new UserFaditorData("user"+String.valueOf(user_count), "", "", "");
         storeUpload(userFaditorData);
     }
     private void storeUpload(UserFaditorData userFaditorData) {

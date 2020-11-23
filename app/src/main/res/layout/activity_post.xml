@@ -8,59 +8,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout6"
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/view_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="#000000"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="게시물"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteY="16dp" />
-
-        <ImageButton
-            android:id="@+id/back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="15dp"
-            android:background="@android:color/transparent"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/back" />
-
-        <ImageButton
-            android:id="@+id/menu"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginRight="15dp"
-            android:background="@android:color/transparent"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/menu" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/people_contents"
@@ -69,26 +21,35 @@
         android:layout_marginTop="55dp"
         android:orientation="vertical"
         android:background="#000000"
-        app:layout_constraintTop_toBottomOf="@id/constraintLayout6">
+        app:layout_constraintTop_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:gravity="center_vertical">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/account_iv_profile"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:src="@mipmap/ic_launcher" />
-
-            <TextView
-                android:id="@+id/user_name"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="User Name" />
-
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ffffff"
+                    android:text="User Name" />
+                <TextView
+                    android:id="@+id/post_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2020.11.23" />
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView
@@ -100,37 +61,61 @@
         <LinearLayout
             android:id="@+id/buttons"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="40dp"
             android:gravity="center_vertical">
 
-            <ImageView
+            <CheckBox
                 android:id="@+id/content_heart_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_margin="10dp"
-                android:src="@drawable/heart" />
+                android:adjustViewBounds="true"
+                android:checked="true"
+                android:button="@null"
+                android:background="@drawable/like_on_off" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/conent_comment"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_margin="10dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:background="#000000"
                 app:srcCompat="@drawable/comment" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            <TextView
+                android:id="@+id/like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_margin="5dp"
+                android:text="좋아요" />
+
+            <TextView
+                android:id="@+id/like_people"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="0" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginRight="10dp"
+                android:text="개" />
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/like_people"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="Like 0" />
 
         <TextView
             android:id="@+id/text_upload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:textColor="#ffffff"
             android:text="content text" />
 
     </LinearLayout>

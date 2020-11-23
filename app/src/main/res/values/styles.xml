@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style parent="Theme.AppCompat.Light.NoActionBar" name="AppTheme">
         <!-- Customize your theme here. -->
@@ -13,5 +13,32 @@
     <style name="AppTheme.BlueRipple">
         <item name="colorControlHighlight">#82B7E4</item>
         <item name="android:textColor">#FFFFFF</item>
+    </style>
+    <style name="Theme.Dark" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor" tools:targetApi="21">#000000</item> <!--Status Bar의 배경색-->
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item> <!--Status Bar 아이콘의 색상 true:검은 아이콘, false:흰 아이콘-->
+
+        <item name="toolbarStyle">@style/ToolbarStyle.Dark</item> <!--Toolbar 스타일-->
+        <item name="actionMenuTextColor">@color/white</item> <!--액션 메뉴의 텍스트 색상-->
+        <item name="colorControlNormal">@color/white</item> <!--홈/뒤로가기 버튼의 색상-->
+    </style>
+
+    <!--Toolbar 스타일-->
+    <style name="ToolbarStyle.Dark" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">#000000</item> <!-- Toolbar의 배경색-->
+        <item name="titleTextAppearance">@style/ToolbarTitleStyle.Dark</item> <!-- Toolbar의 타이틀 텍스트-->
+        <item name="subtitleTextAppearance">@style/ToolbarSubtitleStyle.Dark</item> <!-- Toolbar의 서브타이틀 텍스트-->
+    </style>
+
+    <!-- Toolbar의 타이틀 텍스트-->
+    <style name="ToolbarTitleStyle.Dark" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">#ffffff</item> <!-- Toolbar의 타이틀 텍스트 색상-->
+        <item name="android:textSize">18sp</item> <!-- Toolbar의 타이틀 텍스트 사이즈-->
+    </style>
+
+    <!-- Toolbar의 서브타이틀 텍스트-->
+    <style name="ToolbarSubtitleStyle.Dark" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textColor">#ffffff</item> <!-- Toolbar의 서브타이틀 텍스트 색상-->
+        <item name="android:textSize">12dp</item> <!-- Toolbar의 서브타이틀 텍스트 사이즈-->
     </style>
 </resources>

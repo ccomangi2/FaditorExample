@@ -4,11 +4,15 @@ public class UserFaditorData {
     String user_name;
     String user_intro;
     String like_fashion;
+    String photoUri;
 
-    public UserFaditorData(String user_name, String user_intro, String like_fashion) {
+    public UserFaditorData() {}
+
+    public UserFaditorData(String user_name, String user_intro, String like_fashion, String photoUri) {
         this.user_name = user_name;
         this.user_intro = user_intro;
         this.like_fashion = like_fashion;
+        this.photoUri = photoUri;
     }
 
     public String getUser_name() {
@@ -35,4 +39,11 @@ public class UserFaditorData {
         this.like_fashion = like_fashion;
     }
 
+    public String getPhotoUri() {
+        return photoUri;
+    }
+
+    public void setPhotoUri(String photoUri) {
+        this.photoUri = photoUri;
+    }
 }

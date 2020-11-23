@@ -88,6 +88,6 @@ public class FirebaseHelper {
         return mimeType != null && mimeType.startsWith("image");
     }
     public static boolean isStorageUrl(String url){
-        return Patterns.WEB_URL.matcher(url).matches() && url.contains("gs://faditorexmaple.appspot.com/post");
+        return Patterns.WEB_URL.matcher(url).matches() && url.contains("gs://faditorexmaple.appspot.com/posts");
     }
 }
