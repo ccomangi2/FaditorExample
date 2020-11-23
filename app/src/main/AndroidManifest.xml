@@ -27,7 +27,8 @@
             android:name=".SplashActivity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            tools:ignore="InnerclassSeparator,LockedOrientationActivity"> <!-- 강제로 세로모드로만 하게 만듬 -->
+            tools:ignore="InnerclassSeparator,LockedOrientationActivity"
+            android:usesCleartextTraffic="true"> <!-- 강제로 세로모드로만 하게 만듬 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -52,10 +53,9 @@
             tools:ignore="InnerclassSeparator" />
         <activity android:name=".PaperActivity.PaperActivity"
             tools:ignore="InnerclassSeparator" />
-        <activity android:name=".PostUploadActivity.PostUploadActivity"
-            tools:ignore="InnerclassSeparator" />
         <activity android:name=".LoginActivity.LoginActivity"
             tools:ignore="InnerclassSeparator" />
+        <activity android:name=".PostUploadActivity.PostUploadActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.faditor.faditorexample.Database.FirebaseHelper;
 import com.faditor.faditorexample.Database.PostData;
 import com.faditor.faditorexample.PostUploadActivity.OnPostListener;
 import com.faditor.faditorexample.PostUploadActivity.PostUploadActivity;
@@ -20,7 +19,6 @@ import com.faditor.faditorexample.R;
 
 public class PostActivity extends AppCompatActivity {
     private PostData postInfo;
-    private FirebaseHelper firebaseHelper;
     private LinearLayout contentsLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +26,6 @@ public class PostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post);
 
         postInfo = (PostData) getIntent().getSerializableExtra("postInfo");
-        firebaseHelper = new FirebaseHelper(this);
-        firebaseHelper.setOnPostListener(onPostListener);
         uiUpdate();
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -71,7 +67,6 @@ public class PostActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                firebaseHelper.storageDelete(postInfo);
                 return true;
             case R.id.modify:
                 myStartActivity(PostUploadActivity.class, postInfo);
@@ -103,7 +98,6 @@ public class PostActivity extends AppCompatActivity {
 
     private void myStartActivity(Class c, PostData postInfo) {
         Intent intent = new Intent(this, c);
-        intent.putExtra("postInfo", postInfo);
         startActivityForResult(intent, 0);
     }
 }

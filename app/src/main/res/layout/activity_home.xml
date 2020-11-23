@@ -77,19 +77,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="parent">
 
-            <ImageView
-                android:id="@+id/sticker2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="120dp"
-                android:layout_marginLeft="120dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shadow2"
-                app:srcCompat="@drawable/sticker2" />
-
             <TextView
                 android:id="@+id/shadow1"
                 android:layout_width="190dp"
@@ -143,16 +130,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@color/colorGray" />
 
-            <ImageView
-                android:id="@+id/sticker3"
-                android:layout_width="119dp"
-                android:layout_height="179dp"
-                android:layout_marginTop="40dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shadow2"
-                app:srcCompat="@drawable/sticker3" />
-
             <TextView
                 android:id="@+id/best_look_user1"
                 android:layout_width="wrap_content"
@@ -164,37 +141,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/shadow2" />
 
-            <ImageView
-                android:id="@+id/sticker1"
-                android:layout_width="402dp"
-                android:layout_height="184dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/sticker" />
-
-            <HorizontalScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:overScrollMode="never"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                    </androidx.recyclerview.widget.RecyclerView>
-
-                </LinearLayout>
-            </HorizontalScrollView>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shadow1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
