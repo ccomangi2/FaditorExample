@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,6 +48,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHold
         holder.user_name.setText(arrayList.get(position).getUsername());
         holder.post_date.setText(arrayList.get(position).getPostDate());
         holder.text_upload.setText(arrayList.get(position).getContents());
+        int start = arrayList.get(position).getStarCount();
+        if(holder.content_heart_button.isChecked()) {
+            start += 1;
+            holder.like_people.setText(String.valueOf(start));
+        } else {
+            start -= 1;
+            holder.like_people.setText(String.valueOf(start));
+        }
     }
 
     @Override
@@ -60,6 +70,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHold
         TextView user_name;
         TextView post_date;
         TextView text_upload;
+        TextView like_people;
+        CheckBox content_heart_button;
+        ImageButton conent_comment;
 
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -68,6 +81,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHold
             this.user_name = itemView.findViewById(R.id.user_name);
             this.post_date = itemView.findViewById(R.id.post_date);
             this.text_upload = itemView.findViewById(R.id.text_upload);
+            this.like_people = itemView.findViewById(R.id.like_people);
+            this.content_heart_button = itemView.findViewById(R.id.content_heart_button);
+            this.conent_comment = itemView.findViewById(R.id.conent_comment);
         }
     }
 }

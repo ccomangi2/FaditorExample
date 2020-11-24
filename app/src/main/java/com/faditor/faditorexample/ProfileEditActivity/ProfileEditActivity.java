@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,34 +37,37 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Map;
 
 import static android.os.Environment.DIRECTORY_PICTURES;
 
 public class ProfileEditActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private int pathCount, successCount;
+    private DatabaseReference mUserReference;
+    DatabaseReference usereRef;
+    private FirebaseDatabase database;
 
     CardView lila;
 
@@ -115,13 +118,80 @@ public class ProfileEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profileedit);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        DocumentReference docRef = db.collection("Users").document(user.getUid());
 
         constraintLayout = findViewById(R.id.fashtion_layout); //선택하기 누를 시
         lila = (CardView) findViewById(R.id.select_buttons); //프로필 사진 바꾸기 누를 시
+        database = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+        usereRef = database.getReference("user_list/" + user.getUid());
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://faditorexmaple.appspot.com");
+
+        //개인정보
+        b_name = findViewById(R.id.name_edit);
+        b_email = findViewById(R.id.email_edit);
+
+        //faditor 정보
+        user_name = findViewById(R.id.username_edit);
+        user_intro = findViewById(R.id.info_edit);
+        like_fashion = findViewById(R.id.like_fashion);
+
+        //생성된 FirebaseStorage를 참조하는 storage 생성
+        final StorageReference storageRef = storage.getReference();
+        usereRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                UserFaditorData userFaditorData = dataSnapshot.getValue(UserFaditorData.class);
+                UserData userData = dataSnapshot.getValue(UserData.class);
+                //데이터를 화면에 출력해 준다.
+
+                //개인정보
+                String name = userData.getName();
+                String email = userData.getEmail();
+
+                b_name.setText(name);
+                b_email.setText(email);
+
+                //faditor 정보
+                String username = userFaditorData.getUser_name();
+                String intro = userFaditorData.getUser_intro();
+                String like = userFaditorData.getLike_fashion();
+                String profile = userFaditorData.getPhotoname();
+                user_name.setText(username);
+                user_intro.setText(intro);
+                like_fashion.setText(like);
+
+
+                //Storage 내부의 images 폴더 안의 image.jpg 파일명을 가리키는 참조 생성
+                if (profile != null) {
+                    StorageReference pathReference = storageRef.child("users/" + profile);
+                    pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            ImageView imageView = findViewById(R.id.profile_image);
+                            //이미지 로드 성공시
+                            Glide.with(ProfileEditActivity.this)
+                                    .load(uri)
+                                    .into(imageView);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+                    Log.d("MyProfileActivity", "Value is: " + name);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("MyProfileActivity", "Failed to read value.", error.toException());
+            }
+        });
 
         // 사진 저장 후 미디어 스캐닝을 돌려줘야 갤러리에 반영됨.
         mMediaScanner = MediaScanner.getInstance(getApplicationContext());
@@ -177,72 +247,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         findViewById(R.id.btn_camera).setOnClickListener(onClickListener);
         findViewById(R.id.btn_cancel).setOnClickListener(onClickListener);
 
-        //개인정보
-        b_name = findViewById(R.id.name_edit);
-        b_email = findViewById(R.id.email_edit);
-        docRef.collection("Basic").document("info").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                        b_name.setText(document.getData().get("name").toString());
-                        if(document.getData().get("email") != null) {
-                            b_email.setText(document.getData().get("email").toString());
-                        }
-                        if(document.getData().get("email") == null) {
-                            b_email.setHint("email");
-                        }
-                    } else {
-                        Log.d("TAG", "No such document");
-                    }
-                } else {
-                    Log.d("TAG", "get failed with ", task.getException());
-                }
-            }
-        });
-        //faditor 정보
-        user_name = findViewById(R.id.username_edit);
-        user_intro = findViewById(R.id.info_edit);
-        like_fashion = findViewById(R.id.like_fashion);
-        docRef.collection("Faditor").document("info").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                        user_name.setText(document.getData().get("user_name").toString());
-                        user_intro.setText(document.getData().get("user_intro").toString());
-                        like_fashion.setText(document.getData().get("like_fashion").toString());
-                    } else {
-                        Log.d("TAG", "No such document");
-                    }
-                } else {
-                    Log.d("TAG", "get failed with ", task.getException());
-                }
-            }
-        });
+
         //storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference gsReference = storage.getReferenceFromUrl("gs://faditorexmaple.appspot.com/").child("users").child(user.getUid()).child("profile.jpg");
-        gsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                CircleImageView imageView = findViewById(R.id.profile_image);
-                //이미지 로드 성공시
-                Glide.with(ProfileEditActivity.this)
-                        .load(uri)
-                        .into(imageView);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                //이미지 로드 실패시
-                //Toast.makeText(ProfileEditActivity.this, "실패", Toast.LENGTH_SHORT).show();
-            }
-        });
 
     }
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -252,7 +258,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                     gotomain(MainActivity.class);
                     break;
                 case R.id.ok: //수정완료
-                    storageUpload();
+                    loginFirebaseDatabase(true);
                     break;
                 case R.id.image_change: //프로필 이미지 바꾸기
                     lila.setVisibility(View.VISIBLE);
@@ -367,119 +373,70 @@ public class ProfileEditActivity extends AppCompatActivity {
             }
         }
     };
-
-    private void storageUpload() {
+    public void loginFirebaseDatabase(final boolean add){
+        final RelativeLayout loderLayout = findViewById(R.id.loaderLayout);
+        loderLayout.setVisibility(View.VISIBLE);
+        mUserReference = FirebaseDatabase.getInstance().getReference();
+        final Map<String, Object> childUpdates = new HashMap<>();
+        Map<String, Object> postValues = null;
+        final FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseStorage storage = FirebaseStorage.getInstance();
         //패디터 정보
         String userId = mAuth.getUid();
-        String name = user_name.getText().toString();
-        String intro = user_intro.getText().toString();
-        String fashion = like_fashion.getText().toString();
-        String photouri = photoUri.getLastPathSegment();
+        final String name = user_name.getText().toString();
+        final String intro = user_intro.getText().toString();
+        final String fashion = like_fashion.getText().toString();
+        final String photouri = photoUri.getLastPathSegment();
 
         //개인정보
         String basic_name = b_name.getText().toString();
         String basic_email = b_email.getText().toString();
-
-        Log.v("알림", "현재로그인한 유저 " + userId);
-        Log.v("알림", "사용자 이름 " + name);
-        Log.v("알림", "한줄 소개 " + intro);
-        Log.v("알림", "관심 패션 분야 " + fashion);
-
-        //final String date_tv = time;
-        if(user_name.length() > 0 && b_name.length() > 0 && b_email.length() > 0) {
-            UserFaditorData userFaditorData = new UserFaditorData(name, intro, fashion, photouri);
-            storeUpload(userFaditorData);
-            UserData userdata = new UserData(basic_name, basic_email);
-            profileUpload(userdata);
-            gotomain(SettingActivity.class);
-        } else if(user_name.length() == 0 && b_name.length() > 0 && b_email.length() > 0){
-            toastMessage("사용자 이름을 입력해 주세요.");
-        } else if(user_name.length() > 0 && b_name.length() > 0 && b_email.length() == 0){
-            toastMessage("이메일을 입력해 주세요.");
-        } else if(user_name.length() > 0 && b_name.length() == 0 && b_email.length() > 0){
-            toastMessage("이름을 입력해 주세요.");
-        } else {
-            toastMessage("입력란을 확인해 주세요.");
-        }
-    }
-    private void storeUpload(UserFaditorData userFaditorData) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-
-        final DocumentReference documentReference = userFaditorData == null ? firebaseFirestore.collection("users").document() : firebaseFirestore.collection("users").document(user.getUid());
-        // Create a reference to "mountains.jpg"
-        StorageReference mountainsRef = storageRef.child("users/" + documentReference.getId() + "/" + "profile.jpg");
-        // Create a reference to 'images/mountains.jpg'
-        StorageReference mountainImagesRef = storageRef.child("images/profile.jpg");
-
-        mountainsRef.getName().equals(mountainImagesRef.getName());    // true
-        mountainsRef.getPath().equals(mountainImagesRef.getPath());    // false
-
-        ImageView imageView = findViewById(R.id.profile_image);
-
-        imageView.setDrawingCacheEnabled(true);
-        imageView.buildDrawingCache();
-        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = mountainsRef.putBytes(data);
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(new File("users/" + documentReference.getId() + "/" + "profile.jpg"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        if(stream != null) {
-            uploadTask = mountainsRef.putStream(stream);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                    // ...
-                }
-            });
-        }
-
-        db.collection("Users").document(user.getUid()).collection("Faditor").document("info").set(userFaditorData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://faditorexmaple.appspot.com").child("users/" + photoUri.getLastPathSegment());
+        storageRef.putFile(photoUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        //Log.d("알림", "DocumentSnapshot added with ID: " + d.getId());
-                        finish();
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        //Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w("알림", "Error adding document", e);
-                    }
-                });
-    }
-    private void profileUpload(UserData userdata) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(user.getUid()).collection("Basic").document("info").set(userdata)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //Log.d("알림", "DocumentSnapshot added with ID: " + d.getId());
-                        finish();
+                        Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("알림", "Error adding document", e);
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+
+                    }
+                })
+                .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            loderLayout.setVisibility(View.GONE);
+                            final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
+                            while (!imageUrl.isComplete()) ;
+                            Map<String, Object> postValues = null;
+                            if(user_name.length() > 0 && b_name.length() > 0 && b_email.length() > 0) {
+                                if(add){
+                                    UserFaditorData userFaditorData = new UserFaditorData(name, intro, fashion, imageUrl.getResult().toString(), photoUri.getLastPathSegment());
+                                    postValues = userFaditorData.getUserFaditorData();
+                                }
+                                //childUpdates.put("/user_list/" + user.getUid(), postValues);
+                                mUserReference.child("/user_list/" + user.getUid()).updateChildren(postValues);
+                                gotomain(SettingActivity.class);
+                            } else if(user_name.length() == 0 && b_name.length() > 0 && b_email.length() > 0){
+                                toastMessage("사용자 이름을 입력해 주세요.");
+                            } else if(user_name.length() > 0 && b_name.length() > 0 && b_email.length() == 0){
+                                toastMessage("이메일을 입력해 주세요.");
+                            } else if(user_name.length() > 0 && b_name.length() == 0 && b_email.length() > 0){
+                                toastMessage("이름을 입력해 주세요.");
+                            } else {
+                                toastMessage("입력란을 확인해 주세요.");
+                            }
+                        }
                     }
                 });
     }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,7 +19,6 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.faditor.faditorexample.Database.UserData;
-import com.faditor.faditorexample.Database.UserFaditorData;
 import com.faditor.faditorexample.MainActivity.MainActivity;
 import com.faditor.faditorexample.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,8 +27,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -36,9 +34,12 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
     private static final int GOOGLE_LOGIN_CODE = 9001;
@@ -48,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
 
     private CallbackManager mCallbackManager;
-
+    private DatabaseReference mLoginReference;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,17 +128,19 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
-
+        final RelativeLayout loderLayout = findViewById(R.id.loaderLayout);
+        loderLayout.setVisibility(View.VISIBLE);
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            loderLayout.setVisibility(View.GONE);
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            storageUpload();
+                            loginFirebaseDatabase(true);
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -178,16 +181,19 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, GOOGLE_LOGIN_CODE);
     }
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        final RelativeLayout loderLayout = findViewById(R.id.loaderLayout);
+        loderLayout.setVisibility(View.VISIBLE);
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            loderLayout.setVisibility(View.GONE);
                             // Sign in success, update UI with the signed-in user's information
                             //Snackbar.make(findViewById(R.id.layout_main), "Authentication Successed.", Snackbar.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
-                            storageUpload();
+                            loginFirebaseDatabase(true);
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -203,63 +209,20 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
     }
-
-    private void storageUpload() {
+    public void loginFirebaseDatabase(boolean add){
+        mLoginReference = FirebaseDatabase.getInstance().getReference();
+        Map<String, Object> childUpdates = new HashMap<>();
+        Map<String, Object> postValues = null;
         FirebaseUser user = mAuth.getCurrentUser();
-
-        String userId = mAuth.getUid();
         String name = user.getDisplayName();
         String email = user.getEmail();
-        int user_count = 0;
-        if(user_count < 1000000000) {
-            user_count++;
+        if(add){
+            UserData userdata = new UserData(name, email, "use12312312", "", "","");
+            postValues = userdata.getUserData();
+            gotomain();
         }
-
-        Log.v("알림", "현재로그인한 유저 " + userId);
-        Log.v("알림", "현재로그인한 이메일 " + email);
-        Log.v("알림", "유저 이름 " + name);
-
-        //final String date_tv = time;
-        UserData userdata = new UserData(name, email);
-        profileUpload(userdata);
-        UserFaditorData userFaditorData = new UserFaditorData("user"+String.valueOf(user_count), "", "", "");
-        storeUpload(userFaditorData);
-    }
-    private void storeUpload(UserFaditorData userFaditorData) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(user.getUid()).collection("Faditor").document("info").set(userFaditorData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //Log.d("알림", "DocumentSnapshot added with ID: " + d.getId());
-                        finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("알림", "Error adding document", e);
-                    }
-                });
-    }
-    private void profileUpload(UserData userdata) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(user.getUid()).collection("Basic").document("info").set(userdata)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //Log.d("알림", "DocumentSnapshot added with ID: " + d.getId());
-                        finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("알림", "Error adding document", e);
-                    }
-                });
+        childUpdates.put("/user_list/" + user.getUid(), postValues);
+        mLoginReference.updateChildren(childUpdates);
     }
 
     private void toastMessage(String msg) {

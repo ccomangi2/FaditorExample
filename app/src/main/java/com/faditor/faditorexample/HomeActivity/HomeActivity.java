@@ -16,9 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.faditor.faditorexample.Adapter.PostAdapter;
 import com.faditor.faditorexample.Database.PostData;
+import com.faditor.faditorexample.Database.UserFaditorData;
 import com.faditor.faditorexample.PaperActivity.PaperActivity;
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SettingActivity.SettingActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +35,9 @@ public class HomeActivity extends Fragment {
     // 상단바 메뉴 버튼
     ImageButton button_news; //뉴스
     ImageButton button_setting; //설정
-
+    private FirebaseAuth mAuth;
+    DatabaseReference usereRef;
+    private FirebaseDatabase userdatabase;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -49,25 +54,44 @@ public class HomeActivity extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         arrayList = new ArrayList<>(); // User 객체를 담을 어레이 리스트 (어댑터쪽으로)
 
-        database = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
-
-        databaseReference = database.getReference("content_list"); // DB 테이블 연결
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        userdatabase = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+        usereRef = userdatabase.getReference("user_list/" + user.getUid());
+        usereRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // 파이어베이스 데이터베이스의 데이터를 받아오는 곳
-                arrayList.clear(); // 기존 배열리스트가 존재하지않게 초기화
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) { // 반복문으로 데이터 List를 추출해냄
-                    PostData postData = snapshot.getValue(PostData.class); // 만들어뒀던 User 객체에 데이터를 담는다.
-                    arrayList.add(postData); // 담은 데이터들을 배열리스트에 넣고 리사이클러뷰로 보낼 준비
-                }
-                adapter.notifyDataSetChanged(); // 리스트 저장 및 새로고침
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                UserFaditorData userFaditorData = dataSnapshot.getValue(UserFaditorData.class);
+                //데이터를 화면에 출력해 준다.
+                String name = userFaditorData.getUser_name();
+                database = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+                databaseReference = database.getReference("content_list/" + name); // DB 테이블 연결
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        // 파이어베이스 데이터베이스의 데이터를 받아오는 곳
+                        arrayList.clear(); // 기존 배열리스트가 존재하지않게 초기화
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) { // 반복문으로 데이터 List를 추출해냄
+                            PostData postData = snapshot.getValue(PostData.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                            arrayList.add(postData); // 담은 데이터들을 배열리스트에 넣고 리사이클러뷰로 보낼 준비
+                        }
+                        adapter.notifyDataSetChanged(); // 리스트 저장 및 새로고침
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // 디비를 가져오던중 에러 발생 시
+                        Log.e("에러", String.valueOf(databaseError.toException())); // 에러문 출력
+                    }
+                });
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // 디비를 가져오던중 에러 발생 시
-                Log.e("MainActivity", String.valueOf(databaseError.toException())); // 에러문 출력
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("MyProfileActivity", "Failed to read value.", error.toException());
             }
         });
 

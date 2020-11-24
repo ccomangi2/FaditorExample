@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import androidx.core.content.FileProvider;
 import androidx.loader.content.CursorLoader;
 
 import com.faditor.faditorexample.Database.PostData;
+import com.faditor.faditorexample.Database.UserFaditorData;
 import com.faditor.faditorexample.MainActivity.MainActivity;
 import com.faditor.faditorexample.ProfileEditActivity.MediaScanner;
 import com.faditor.faditorexample.R;
@@ -33,11 +35,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -65,6 +67,8 @@ public class PostUploadActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 672;
     private String imageFilePath;
     private Uri photoUri;
+    DatabaseReference usereRef;
+    private FirebaseDatabase database;
 
     int position;
 
@@ -102,7 +106,6 @@ public class PostUploadActivity extends AppCompatActivity {
                 case R.id.upload: //수정완료
                     if(photoUri != null) {
                         postFirebaseDatabase(true);
-                        gotomain(MainActivity.class);
                     } else {
                         toastMessage("이미지를 추가해주세요.");
                     }
@@ -131,76 +134,83 @@ public class PostUploadActivity extends AppCompatActivity {
     };
 
     public void postFirebaseDatabase(final boolean add) {
-            mPostReference = FirebaseDatabase.getInstance().getReference();
-            final Map<String, Object> childUpdates = new HashMap<>();
-            mAuth = FirebaseAuth.getInstance();
-            FirebaseUser user = mAuth.getCurrentUser();
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            final FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
-            DocumentReference docRef = db.collection("Users").document(user.getUid());
-            docRef.collection("Faditor").document("info").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                            final String userprofileimage = document.getData().get("photoUri").toString();
-                            final String username = document.getData().get("user_name").toString();
-                            Date mDate = new Date();
-                            SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                            final String postdate = simpleDate.format(mDate);
-                            final String contents = text_upload.getText().toString();
-                            StorageReference storageRef = storage.getReferenceFromUrl("gs://faditorexmaple.appspot.com").child("posts/" + photoUri.getLastPathSegment());
-                            storageRef.putFile(photoUri)
-                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            position++;
-                                            Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+        final RelativeLayout loderLayout = findViewById(R.id.loaderLayout);
+        loderLayout.setVisibility(View.VISIBLE);
+        mPostReference = FirebaseDatabase.getInstance().getReference();
+        final Map<String, Object> childUpdates = new HashMap<>();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseStorage storage = FirebaseStorage.getInstance();
 
-                                        }
-                                    })
-                                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
-                                                while (!imageUrl.isComplete()) ;
-                                                Map<String, Object> postValues = null;
-                                                if (add) {
-                                                    PostData post = new PostData(userprofileimage, username, postdate, contents, photoUri.getLastPathSegment(), imageUrl.getResult().toString());
-                                                    postValues = post.getPostData();
-                                                }
+        database = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+        usereRef = database.getReference("user_list/" + user.getUid());
+        FirebaseStorage storageuser = FirebaseStorage.getInstance("gs://faditorexmaple.appspot.com");
 
-                                                childUpdates.put("/content_list/" + username/* + ("/post_" + position)*/, postValues);
-                                                mPostReference.updateChildren(childUpdates);
-                                            }
-                                        }
-                                    });
+        //생성된 FirebaseStorage를 참조하는 storage 생성
+        final StorageReference storageRef = storageuser.getReference();
+        usereRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                UserFaditorData userFaditorData = dataSnapshot.getValue(UserFaditorData.class);
+                //데이터를 화면에 출력해 준다.
+                final String username = userFaditorData.getUser_name();
+                String intro = userFaditorData.getUser_intro();
+                String like = userFaditorData.getLike_fashion();
+                final String userprofileimage = userFaditorData.getPhotoUri();
 
-                        } else {
-                            Log.d("TAG", "No such document");
-                        }
-                    } else {
-                        Log.d("TAG", "get failed with ", task.getException());
-                    }
-                }
-            });
+                Date mDate = new Date();
+                SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                final String postdate = simpleDate.format(mDate);
+                final String contents = text_upload.getText().toString();
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://faditorexmaple.appspot.com").child("posts/" + photoUri.getLastPathSegment());
+                storageRef.putFile(photoUri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+
+                            }
+                        })
+                        .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    loderLayout.setVisibility(View.GONE);
+                                    final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
+                                    while (!imageUrl.isComplete()) ;
+                                    Map<String, Object> postValues = null;
+                                    if (add) {
+                                        PostData post = new PostData(userprofileimage, username, postdate, contents, photoUri.getLastPathSegment(), imageUrl.getResult().toString());
+                                        postValues = post.getPostData();
+                                        gotomain(MainActivity.class);
+                                    }
+                                    //childUpdates.put("/content_list/" + username, postValues);
+                                    mPostReference.child("/content_list/").child(username).push().setValue(postValues);
+                                }
+                            }
+                        });
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("에러", String.valueOf(error.toException())); // 에러문 출력
+            }
+        });
     }
-    public String getPath(Uri uri){
+            public String getPath(Uri uri){
         String [] proj = {MediaStore.Images.Media.DATA};
         CursorLoader cursorLoader = new CursorLoader(this,uri,proj,null,null,null);
         Cursor cursor = cursorLoader.loadInBackground();
