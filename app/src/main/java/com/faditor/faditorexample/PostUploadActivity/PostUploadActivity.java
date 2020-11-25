@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.loader.content.CursorLoader;
 
+import com.faditor.faditorexample.Database.NoticeData;
 import com.faditor.faditorexample.Database.PostData;
 import com.faditor.faditorexample.Database.UserFaditorData;
 import com.faditor.faditorexample.MainActivity.MainActivity;
@@ -65,6 +66,7 @@ import static android.os.Environment.DIRECTORY_PICTURES;
 
 public class PostUploadActivity extends AppCompatActivity {
     private DatabaseReference mPostReference;
+    private DatabaseReference mNoticeReference;
     private FirebaseAuth mAuth;
     EditText text_upload;
     private static final int REQUEST_IMAGE_CAPTURE = 672;
@@ -140,9 +142,10 @@ public class PostUploadActivity extends AppCompatActivity {
         final RelativeLayout loderLayout = findViewById(R.id.loaderLayout);
         loderLayout.setVisibility(View.VISIBLE);
         mPostReference = FirebaseDatabase.getInstance().getReference();
+        mNoticeReference = FirebaseDatabase.getInstance().getReference();
         final Map<String, Object> childUpdates = new HashMap<>();
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseUser user = mAuth.getCurrentUser();
         final FirebaseStorage storage = FirebaseStorage.getInstance();
 
         database = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
@@ -203,6 +206,27 @@ public class PostUploadActivity extends AppCompatActivity {
                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                         startActivity(intent);
 
+                                        FirebaseDatabase noticedatabase = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+                                        DatabaseReference noticeRef = noticedatabase.getReference("user_list/" + user.getUid());
+                                        noticeRef.addValueEventListener(new ValueEventListener() {
+                                            Map<String, Object> noticeValues = null;
+                                            @Override
+                                            public void onDataChange(DataSnapshot data) {
+                                                UserFaditorData userData = data.getValue(UserFaditorData.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                                                String name = userData.getUser_name();
+
+                                                NoticeData noticeData = new NoticeData(name);
+                                                noticeValues =noticeData.getNoticeData();
+
+                                                mNoticeReference.child("/notice_list/").push().setValue(noticeValues);
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError error) {
+                                                // Failed to read value
+                                                Log.w("MyProfileActivity", "Failed to read value.", error.toException());
+                                            }
+                                        });
                                     }
                                     //childUpdates.put("/content_list/" + username, postValues);
                                     mPostReference.child("/content_list/").child(username).child(Objects.requireNonNull(photoUri.getLastPathSegment())).setValue(postValues);

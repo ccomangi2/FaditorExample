@@ -1,6 +1,7 @@
 package com.faditor.faditorexample.HomeActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +17,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.faditor.faditorexample.Adapter.PostAdapter;
 import com.faditor.faditorexample.Database.PostData;
 import com.faditor.faditorexample.Database.UserFaditorData;
 import com.faditor.faditorexample.PaperActivity.PaperActivity;
 import com.faditor.faditorexample.R;
 import com.faditor.faditorexample.SettingActivity.SettingActivity;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +33,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -40,6 +46,10 @@ public class HomeActivity extends Fragment {
     private FirebaseAuth mAuth;
     DatabaseReference usereRef;
     DatabaseReference faditorRef;
+    DatabaseReference bestlook1Ref;
+    DatabaseReference bestlook2Ref;
+    DatabaseReference bestuser1Ref;
+    DatabaseReference bestuser2Ref;
     private FirebaseDatabase userdatabase;
     private RecyclerView recyclerView;
     private RecyclerView faditor_recyclerView;
@@ -161,9 +171,81 @@ public class HomeActivity extends Fragment {
             }
         });
 
-        //best look
+        //best look img 1
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://faditorexmaple.appspot.com");
+        StorageReference storageRef = storage.getReference();
+
+        StorageReference best1Reference = storageRef.child("posts/" + "image:1648");
+        best1Reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                //이미지 로드 성공시
+                Glide.with(HomeActivity.this)
+                        .load(uri)
+                        .into(bestlook1);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+        //bestlookimg2
+        StorageReference best2Reference = storageRef.child("posts/" + "image:1650");
+        best2Reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                //이미지 로드 성공시
+                Glide.with(HomeActivity.this)
+                        .load(uri)
+                        .into(bestlook2);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
 
 
+        //best user 1
+        userdatabase = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+        bestlook1Ref = userdatabase.getReference("content_list/amassuvin");
+        bestlook1Ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot data) {
+                PostData postData = data.getValue(PostData.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                String name = postData.getUsername();
+
+                bestlookuser1.setText(name);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("MyProfileActivity", "Failed to read value.", error.toException());
+            }
+        });
+
+        //best user 2
+        userdatabase = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+        bestlook2Ref = userdatabase.getReference("content_list/amassuvin");
+        bestlook2Ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot data) {
+                PostData postData = data.getValue(PostData.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                String name = postData.getUsername();
+
+                bestlookuser2.setText(name);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("MyProfileActivity", "Failed to read value.", error.toException());
+            }
+        });
 
         return view;
     }
