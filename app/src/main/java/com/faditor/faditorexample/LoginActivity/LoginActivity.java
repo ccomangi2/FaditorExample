@@ -217,7 +217,7 @@ public class LoginActivity extends AppCompatActivity {
         String name = user.getDisplayName();
         String email = user.getEmail();
         if(add){
-            UserData userdata = new UserData(name, email, "use12312312", "", "","");
+            UserData userdata = new UserData(user.getUid(), name, email, "use12312312", "", "","");
             postValues = userdata.getUserData();
             gotomain();
         }

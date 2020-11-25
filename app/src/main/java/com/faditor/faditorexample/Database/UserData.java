@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserData {
+    String userId;
     String name; //이름
     String email; //이메일
     String user_name;
@@ -15,7 +16,8 @@ public class UserData {
 
     public UserData() {}
 
-    public UserData(String name, String email, String user_name, String user_intro, String like_fashion, String photoUri) {
+    public UserData(String userId, String name, String email, String user_name, String user_intro, String like_fashion, String photoUri) {
+        this.userId = userId;
         this.name = name;
         this.email = email;
         this.user_name = user_name;
@@ -26,6 +28,7 @@ public class UserData {
     @Exclude
     public Map<String, Object> getUserData(){
         Map<String, Object> docData = new HashMap<>();
+        docData.put("userId",userId);
         docData.put("name",name);
         docData.put("email", email);
         docData.put("user_name",user_name);
@@ -35,6 +38,15 @@ public class UserData {
         //docData.put("photoUri",photoUri);
         return  docData;
     }
+
+    public String getPhotoUri() {
+        return photoUri;
+    }
+
+    public void setPhotoUri(String photoUri) {
+        this.photoUri = photoUri;
+    }
+
     public String getName() {
         return name;
     }

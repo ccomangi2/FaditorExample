@@ -421,7 +421,7 @@ public class ProfileEditActivity extends AppCompatActivity {
                             Map<String, Object> postValues = null;
                             if(user_name.length() > 0 && b_name.length() > 0 && b_email.length() > 0) {
                                 if(add){
-                                    UserFaditorData userFaditorData = new UserFaditorData(name, intro, fashion, imageUrl.getResult().toString(), photoUri.getLastPathSegment());
+                                    UserFaditorData userFaditorData = new UserFaditorData(user.getUid(), name, intro, fashion, imageUrl.getResult().toString(), photoUri.getLastPathSegment());
                                     postValues = userFaditorData.getUserFaditorData();
                                 }
                                 //childUpdates.put("/user_list/" + user.getUid(), postValues);

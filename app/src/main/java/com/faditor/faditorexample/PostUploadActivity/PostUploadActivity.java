@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.loader.content.CursorLoader;
@@ -57,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.os.Environment.DIRECTORY_PICTURES;
 
@@ -159,6 +162,7 @@ public class PostUploadActivity extends AppCompatActivity {
                 String intro = userFaditorData.getUser_intro();
                 String like = userFaditorData.getLike_fashion();
                 final String userprofileimage = userFaditorData.getPhotoUri();
+                final String userprofilename = userFaditorData.getPhotoname();
 
                 Date mDate = new Date();
                 SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -185,6 +189,7 @@ public class PostUploadActivity extends AppCompatActivity {
                             }
                         })
                         .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                             @Override
                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                 if (task.isSuccessful()) {
@@ -193,12 +198,14 @@ public class PostUploadActivity extends AppCompatActivity {
                                     while (!imageUrl.isComplete()) ;
                                     Map<String, Object> postValues = null;
                                     if (add) {
-                                        PostData post = new PostData(userprofileimage, username, postdate, contents, photoUri.getLastPathSegment(), imageUrl.getResult().toString());
+                                        PostData post = new PostData(userprofileimage, username, postdate, contents, photoUri.getLastPathSegment(), imageUrl.getResult().toString(), userprofilename);
                                         postValues = post.getPostData();
-                                        gotomain(MainActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(intent);
+
                                     }
                                     //childUpdates.put("/content_list/" + username, postValues);
-                                    mPostReference.child("/content_list/").child(username).push().setValue(postValues);
+                                    mPostReference.child("/content_list/").child(username).child(Objects.requireNonNull(photoUri.getLastPathSegment())).setValue(postValues);
                                 }
                             }
                         });

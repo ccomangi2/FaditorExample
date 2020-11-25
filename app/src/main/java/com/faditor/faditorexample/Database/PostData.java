@@ -13,6 +13,7 @@ public class PostData {
     public String photo;
     public String photoName; // 게시글사진 이름(사진삭제할때 필요, 절대경로를 뜻함)
     public String userprofileimage; // 회원가입시 프로필사진
+    public String userprofileName;
     public String username; // 회원가입시 닉네임
 
     public int starCount = 0; // 좋아요 갯수
@@ -20,7 +21,7 @@ public class PostData {
 
     public PostData() {}
 
-    public PostData(String userId, String userprofileimage, String username, String postDate, String contents,  String photoName, String photo) {
+    public PostData(String userId, String userprofileimage, String username, String postDate, String contents,  String photoName, String photo, String userprofileName) {
         this.userId = userId;
         this.postDate = postDate;
         this.contents = contents;
@@ -29,7 +30,8 @@ public class PostData {
         this.userprofileimage = userprofileimage;
         this.username = username;
     }
-    public PostData(String userprofileimage, String username, String postDate, String contents,  String photoName, String photo) {
+    public PostData(String userprofileimage, String username, String postDate, String contents,  String photoName, String photo, String userprofileName) {
+        this.userprofileName = userprofileName;
         this.position = position;
         this.postDate = postDate;
         this.contents = contents;
@@ -50,8 +52,17 @@ public class PostData {
         docData.put("postDate",postDate);
         docData.put("contents",contents);
         docData.put("starCount", starCount);
+        docData.put("userprofileName", userprofileName);
         //docData.put("photoUri",photoUri);
         return  docData;
+    }
+
+    public String getUserprofileName() {
+        return userprofileName;
+    }
+
+    public void setUserprofileName(String userprofileName) {
+        this.userprofileName = userprofileName;
     }
 
     public String getPhoto() {

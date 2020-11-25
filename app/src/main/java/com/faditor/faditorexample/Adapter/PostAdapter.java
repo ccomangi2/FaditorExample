@@ -19,12 +19,18 @@ import com.faditor.faditorexample.R;
 import java.util.ArrayList;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHolder> {
-
+    private ImageButton conent_comment;
     private ArrayList<PostData> arrayList;
     private Context context;
 
+    public interface OnItemClickListener {
+        void onItemClick(View v, int position);
+    }
 
-    public PostAdapter(ArrayList<PostData> arrayList, Context context) {
+    private OnItemClickListener onItemClickListener;
+
+
+    public PostAdapter(ArrayList<PostData> arrayList, Context context/*, OnItemClickListener onItemClickListener*/) {
         this.arrayList = arrayList;
         this.context = context;
     }
@@ -38,7 +44,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final CustomViewHolder holder, final int position) {
         Glide.with(holder.itemView)
                 .load(arrayList.get(position).getUserprofileimage())
                 .into(holder.account_iv_profile);
@@ -48,16 +54,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHold
         holder.user_name.setText(arrayList.get(position).getUsername());
         holder.post_date.setText(arrayList.get(position).getPostDate());
         holder.text_upload.setText(arrayList.get(position).getContents());
-        int start = arrayList.get(position).getStarCount();
-        if(holder.content_heart_button.isChecked()) {
-            start += 1;
-            holder.like_people.setText(String.valueOf(start));
-        } else {
-            start -= 1;
-            holder.like_people.setText(String.valueOf(start));
-        }
+        holder.content_heart_button.setOnClickListener(new View.OnClickListener() {
+            int start = arrayList.get(position).getStarCount();
+            @Override
+            public void onClick(View v) {
+                if(((CheckBox)v).isChecked()) {
+                    start += 1;
+                    holder.like_people.setText(String.valueOf(start));
+                    start = Integer.parseInt(holder.like_people.getText().toString());
+                } else {
+                    start -= 1;
+                    holder.like_people.setText(String.valueOf(start));
+                    start = Integer.parseInt(holder.like_people.getText().toString());
+                }
+            }
+        });
     }
-
     @Override
     public int getItemCount() {
         // 삼항 연산자
@@ -72,7 +84,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHold
         TextView text_upload;
         TextView like_people;
         CheckBox content_heart_button;
-        ImageButton conent_comment;
 
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,7 +94,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.CustomViewHold
             this.text_upload = itemView.findViewById(R.id.text_upload);
             this.like_people = itemView.findViewById(R.id.like_people);
             this.content_heart_button = itemView.findViewById(R.id.content_heart_button);
-            this.conent_comment = itemView.findViewById(R.id.conent_comment);
+        }
+
+        public ImageButton getBtnTest() {
+            return conent_comment;
         }
     }
 }

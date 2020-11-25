@@ -25,7 +25,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="10dp"
-                android:src="@mipmap/ic_launcher" />
+                android:background="@drawable/basic_profile" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -68,16 +68,6 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/like_on_off"
                 android:button="@null" />
-
-            <ImageButton
-                android:id="@+id/conent_comment"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:adjustViewBounds="true"
-                android:background="#000000"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/comment" />
 
             <View
                 android:layout_width="0dp"

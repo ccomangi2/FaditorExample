@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserFaditorData {
+    String user_id;
     String user_name;
     String user_intro;
     String like_fashion;
@@ -14,7 +15,8 @@ public class UserFaditorData {
 
     public UserFaditorData() {}
 
-    public UserFaditorData(String user_name, String user_intro, String like_fashion, String photoUri, String photoname) {
+    public UserFaditorData(String user_id, String user_name, String user_intro, String like_fashion, String photoUri, String photoname) {
+        this.user_id = user_id;
         this.user_name = user_name;
         this.user_intro = user_intro;
         this.like_fashion = like_fashion;
@@ -24,6 +26,7 @@ public class UserFaditorData {
     @Exclude
     public Map<String, Object> getUserFaditorData(){
         Map<String, Object> docData = new HashMap<>();
+        docData.put("user_id",user_id);
         docData.put("user_name",user_name);
         docData.put("user_intro", user_intro);
         docData.put("like_fashion",like_fashion);
@@ -31,6 +34,14 @@ public class UserFaditorData {
         docData.put("photoname", photoname);
         //docData.put("photoUri",photoUri);
         return  docData;
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getPhotoname() {

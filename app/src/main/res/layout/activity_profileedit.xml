@@ -87,7 +87,7 @@
                     android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:layout_marginTop="30dp"
-                    android:src="@drawable/basic_profile" />
+                    android:background="@drawable/basic_profile"/>
 
                 <Button
                     android:id="@+id/image_change"

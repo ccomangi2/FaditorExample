@@ -70,19 +70,9 @@
                 android:layout_height="30dp"
                 android:layout_margin="10dp"
                 android:adjustViewBounds="true"
-                android:checked="true"
                 android:button="@null"
                 android:background="@drawable/like_on_off" />
 
-            <ImageButton
-                android:id="@+id/conent_comment"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                android:background="#000000"
-                app:srcCompat="@drawable/comment" />
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
